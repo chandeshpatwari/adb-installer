@@ -1,0 +1,36 @@
+# User Management
+
+adb shell cmd package
+adb shell pm
+
+  help
+    Print this help text.
+
+  list users
+    Lists the all/current users.
+
+  create-user [--profileOf USER_ID] [--managed] [--restricted] [--ephemeral]
+      [--guest] [--pre-create-only] [--user-type USER_TYPE] USER_NAME
+    Create a new user with the given USER_NAME, printing the new user identifier
+    of the user.
+    USER_TYPE is the name of a user type, e.g. android.os.usertype.profile.MANAGED.
+      If not specified, the default user type is android.os.usertype.full.SECONDARY.
+      --managed is shorthand for '--user-type android.os.usertype.profile.MANAGED'.
+      --restricted is shorthand for '--user-type android.os.usertype.full.RESTRICTED'.
+      --guest is shorthand for '--user-type android.os.usertype.full.GUEST'.
+
+  remove-user [--set-ephemeral-if-in-use | --wait] USER_ID
+    Remove the user with the given USER_IDENTIFIER, deleting all data
+    associated with that user.
+      --set-ephemeral-if-in-use: If the user is currently running and
+        therefore cannot be removed immediately, mark the user as ephemeral
+        so that it will be automatically removed when possible (after user
+        switch or reboot)
+      --wait: Wait until user is removed. Ignored if set-ephemeral-if-in-use
+
+  set-user-restriction [--user USER_ID] RESTRICTION VALUE
+
+  get-max-users
+
+  get-max-running-users
+	

@@ -1,0 +1,117 @@
+# ADB Guide
+
+global options:
+ -a                       listen on all network interfaces, not just localhost
+ -d                       use USB device (error if multiple devices connected)
+ -e                       use TCP/IP device (error if multiple TCP/IP devices available)
+ -s SERIAL                use device with given serial (overrides $ANDROID_SERIAL)
+ -t ID                    use device with given transport id
+ -H                       name of adb server host [default=localhost]
+ -P                       port of adb server [default=5037]
+ -L SOCKET                listen on given socket for adb server [default=tcp:localhost:5037]
+ --one-device SERIAL|USB  only allowed with 'start-server' or 'server nodaemon', server will only connect to one USB device, specified by a serial number or USB device address.
+ --exit-on-write-error    exit if stdout is closed
+
+general commands:
+ devices [-l]             list connected devices (-l for long output)
+ help                     show this help message
+ version                  show version num
+
+ shell:
+ shell [COMMAND...]
+     run remote shell command (interactive shell if no command given)
+
+security:
+ keygen FILE
+     generate adb public/private key; private key stored in FILE,
+
+## Connection
+
+networking:
+ pair HOST[:PORT] [PAIRING CODE]
+     pair with a device for secure TCP/IP communication
+ connect HOST[:PORT]
+     connect to a device via TCP/IP [default port=5555]
+ disconnect [HOST[:PORT]]
+     disconnect from given TCP/IP device [default port=5555], or all
+
+scripting:
+ wait-for[-TRANSPORT]-STATE...
+     wait for device to be in a given state
+     STATE: device, recovery, rescue, sideload, bootloader, or disconnect
+     TRANSPORT: usb, local, or any [default=any]
+ get-state                print offline | bootloader | device
+ get-serialno             print <serial-number>
+ get-devpath              print <device-path>
+
+ reboot [bootloader|recovery|sideload|sideload-auto-reboot]
+     reboot the device; defaults to booting system image but
+     supports bootloader and recovery too. sideload reboots
+     into recovery and automatically starts sideload mode,
+     sideload-auto-reboot is the same but reboots after sideloading.
+ sideload OTAPACKAGE      sideload the given full OTA package
+ usb                      restart adbd listening on USB
+ tcpip PORT               restart adbd listening on TCP on PORT
+
+internal debugging:
+ start-server             ensure that there is a server running
+ kill-server              kill the server if it is running
+ reconnect                kick connection from host side to force reconnect
+ reconnect device         kick connection from device side to force reconnect
+ reconnect offline        reset offline/unauthorized devices to force reconnect
+
+usb:
+ attach                   attach a detached USB device
+ detach                   detach from a USB device to allow use by other processes
+
+## File Transfer
+
+ file transfer:
+ push [--sync] [-z ALGORITHM] [-Z] LOCAL... REMOTE
+     copy local files/directories to device
+     --sync: only push files that are newer on the host than the device
+     -n: dry run: push files to device without storing to the filesystem
+     -z: enable compression with a specified algorithm (any/none/brotli/lz4/zstd)
+     -Z: disable compression
+ pull [-a] [-z ALGORITHM] [-Z] REMOTE... LOCAL
+     copy files/dirs from device
+     -a: preserve file timestamp and mode
+     -z: enable compression with a specified algorithm (any/none/brotli/lz4/zstd)
+     -Z: disable compression
+ sync [-l] [-z ALGORITHM] [-Z] [all|data|odm|oem|product|system|system_ext|vendor]
+     sync a local build from $ANDROID_PRODUCT_OUT to the device (default all)
+     -n: dry run: push files to device without storing to the filesystem
+     -l: list files that would be copied, but don't copy them
+     -z: enable compression with a specified algorithm (any/none/brotli/lz4/zstd)
+     -Z: disable compression
+
+## App Install
+
+app installation (see also `adb shell cmd package help`):
+ install [-lrtsdg] [--instant] PACKAGE
+     push a single package to the device and install it
+ install-multiple [-lrtsdpg] [--instant] PACKAGE...
+     push multiple APKs to the device for a single package and install them
+ install-multi-package [-lrtsdpg] [--instant] PACKAGE...
+     push one or more packages to the device and install them atomically
+     -r: replace existing application
+     -t: allow test packages
+     -d: allow version code downgrade (debuggable packages only)
+     -p: partial application install (install-multiple only)
+     -g: grant all runtime permissions
+     --abi ABI: override platform's default ABI
+     --instant: cause the app to be installed as an ephemeral install app
+     --no-streaming: always push APK to device and invoke Package Manager as separate steps
+     --streaming: force streaming APK directly into Package Manager
+     --fastdeploy: use fast deploy
+     --no-fastdeploy: prevent use of fast deploy
+     --force-agent: force update of deployment agent when using fast deploy
+     --date-check-agent: update deployment agent when local version is newer and using fast deploy
+     --version-check-agent: update deployment agent when local version has different version code and using fast deploy
+     (See also `adb shell pm help` for more options.)
+ uninstall [-k] PACKAGE
+     remove this app package from the device
+     '-k': keep the data and cache directories
+
+
+Online documentation: https://android.googlesource.com/platform/packages/modules/adb/+/refs/heads/master/docs/user/adb.1.md

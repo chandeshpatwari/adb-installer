@@ -1,0 +1,59 @@
+# Permission
+
+adb shell cmd package
+adb shell pm
+
+  list permission-groups
+    Prints all known permission groups.
+
+  list permissions [-g] [-f] [-d] [-u] [GROUP]
+    Prints all known permissions; optionally only those in GROUP.  Options are:
+      -g: organize by group
+      -f: print all information
+      -s: short summary
+      -d: only list dangerous permissions
+      -u: list only the permissions users will see
+
+  grant [--user USER_ID] PACKAGE PERMISSION
+
+  revoke [--user USER_ID] PACKAGE PERMISSION
+    These commands either grant or revoke permissions to apps.  The permissions
+    must be declared as used in the app's manifest, be runtime permissions
+    (protection level dangerous), and the app targeting SDK greater than Lollipop MR1.
+
+  set-permission-flags [--user USER_ID] PACKAGE PERMISSION [FLAGS..]
+
+  clear-permission-flags [--user USER_ID] PACKAGE PERMISSION [FLAGS..]
+    These commands either set or clear permission flags on apps.  The permissions
+    must be declared as used in the app's manifest, be runtime permissions
+    (protection level dangerous), and the app targeting SDK greater than Lollipop MR1.
+    The flags must be one or more of [review-required, revoked-compat, revoke-when-requested, user-fixed, user-set]
+
+  reset-permissions
+    Revert all runtime permissions to their default state.
+
+  set-permission-enforced PERMISSION [true|false]
+
+  get-privapp-permissions TARGET-PACKAGE
+    Prints all privileged permissions for a package.
+
+  get-privapp-deny-permissions TARGET-PACKAGE
+    Prints all privileged permissions that are denied for a package.
+
+  get-oem-permissions TARGET-PACKAGE
+    Prints all OEM permissions for a package.
+	
+  has-feature FEATURE_NAME [version]
+    Prints true and returns exit status 0 when system has a FEATURE_NAME,
+    otherwise prints false and returns exit status 1
+
+  list features
+    Prints all features of the system.
+
+  list instrumentation [-f] [TARGET-PACKAGE]
+    Prints all test packages; optionally only those targeting TARGET-PACKAGE
+    Options:
+      -f: dump the name of the .apk file containing the test package
+
+  list libraries
+    Prints all system libraries.

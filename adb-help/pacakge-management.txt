@@ -1,0 +1,169 @@
+# Package Management
+
+adb shell cmd package
+adb shell pm
+
+  help
+    Print this help text.
+
+  path [--user USER_ID] PACKAGE
+    Print the path to the .apk of the given PACKAGE.
+
+  dump PACKAGE
+    Print various system state associated with the given PACKAGE.
+
+  has-feature FEATURE_NAME [version]
+    Prints true and returns exit status 0 when system has a FEATURE_NAME,
+    otherwise prints false and returns exit status 1
+
+  list features
+    Prints all features of the system.
+
+  list instrumentation [-f] [TARGET-PACKAGE]
+    Prints all test packages; optionally only those targeting TARGET-PACKAGE
+    Options:
+      -f: dump the name of the .apk file containing the test package
+
+  list libraries
+    Prints all system libraries.
+
+  list packages [-f] [-d] [-e] [-s] [-3] [-i] [-l] [-u] [-U]
+      [--show-versioncode] [--apex-only] [--uid UID] [--user USER_ID] [FILTER]
+    Prints all packages; optionally only those whose name contains
+    the text in FILTER.  Options are:
+      -f: see their associated file
+      -a: all known packages (but excluding APEXes)
+      -d: filter to only show disabled packages
+      -e: filter to only show enabled packages
+      -s: filter to only show system packages
+      -3: filter to only show third party packages
+      -i: see the installer for the packages
+      -l: ignored (used for compatibility with older releases)
+      -U: also show the package UID
+      -u: also include uninstalled packages
+      --show-versioncode: also show the version code
+      --apex-only: only show APEX packages
+      --uid UID: filter to only show packages with the given UID
+      --user USER_ID: only list packages belonging to the given user
+
+  install [-rtfdg] [-i PACKAGE] [--user USER_ID|all|current]
+       [-p INHERIT_PACKAGE] [--install-location 0/1/2]
+       [--install-reason 0/1/2/3/4] [--originating-uri URI]
+       [--referrer URI] [--abi ABI_NAME] [--force-sdk]
+       [--preload] [--instant] [--full] [--dont-kill]
+       [--enable-rollback]
+       [--force-uuid internal|UUID] [--pkg PACKAGE] [-S BYTES]
+       [--apex] [--staged-ready-timeout TIMEOUT]
+       [PATH [SPLIT...]|-]
+    Install an application.  Must provide the apk data to install, either as
+    file path(s) or '-' to read from stdin.  Options are:
+      -R: disallow replacement of existing application
+      -t: allow test packages
+      -i: specify package name of installer owning the app
+      -f: install application on internal flash
+      -d: allow version code downgrade (debuggable packages only)
+      -p: partial application install (new split on top of existing pkg)
+      -g: grant all runtime permissions
+      -S: size in bytes of package, required for stdin
+      --user: install under the given user.
+      --dont-kill: installing a new feature split, don't kill running app
+      --restrict-permissions: don't whitelist restricted permissions at install
+      --originating-uri: set URI where app was downloaded from
+      --referrer: set URI that instigated the install of the app
+      --pkg: specify expected package name of app being installed
+      --abi: override the default ABI of the platform
+      --instant: cause the app to be installed as an ephemeral install app
+      --full: cause the app to be installed as a non-ephemeral full app
+      --install-location: force the install location:
+          0=auto, 1=internal only, 2=prefer external
+      --install-reason: indicates why the app is being installed:
+          0=unknown, 1=admin policy, 2=device restore,
+          3=device setup, 4=user request
+      --force-uuid: force install on to disk volume with given UUID
+      --apex: install an .apex file, not an .apk
+      --staged-ready-timeout: By default, staged sessions wait 60000
+          milliseconds for pre-reboot verification to complete when
+          performing staged install. This flag is used to alter the waiting
+          time. You can skip the waiting time by specifying a TIMEOUT of '0'
+
+  install-existing [--user USER_ID|all|current]
+       [--instant] [--full] [--wait] [--restrict-permissions] PACKAGE
+    Installs an existing application for a new user.  Options are:
+      --user: install for the given user.
+      --instant: install as an instant app
+      --full: install as a full app
+      --wait: wait until the package is installed
+      --restrict-permissions: don't whitelist restricted permissions
+
+  set-install-location LOCATION
+    Changes the default install location.  NOTE this is only intended for debugging;
+    using this can cause applications to break and other undersireable behavior.
+    LOCATION is one of:
+    0 [auto]: Let system decide the best location
+    1 [internal]: Install on internal device storage
+    2 [external]: Install on external media
+
+  get-install-location
+    Returns the current install location: 0, 1 or 2 as per set-install-location.
+
+  move-package PACKAGE [internal|UUID]
+
+  move-primary-storage [internal|UUID]
+
+  uninstall [-k] [--user USER_ID] [--versionCode VERSION_CODE]
+       PACKAGE [SPLIT...]
+    Remove the given package name from the system.  May remove an entire app
+    if no SPLIT names specified, otherwise will remove only the splits of the
+    given app.  Options are:
+      -k: keep the data and cache directories around after package removal.
+      --user: remove the app from the given user.
+      --versionCode: only uninstall if the app has the given version code.
+
+  clear [--user USER_ID] [--cache-only] PACKAGE
+    Deletes data associated with a package. Options are:
+    --user: specifies the user for which we need to clear data
+    --cache-only: a flag which tells if we only need to clear cache data
+
+  enable [--user USER_ID] PACKAGE_OR_COMPONENT
+  disable [--user USER_ID] PACKAGE_OR_COMPONENT
+  disable-user [--user USER_ID] PACKAGE_OR_COMPONENT
+  disable-until-used [--user USER_ID] PACKAGE_OR_COMPONENT
+  default-state [--user USER_ID] PACKAGE_OR_COMPONENT
+    These commands change the enabled state of a given package or
+    component (written as "package/class").
+
+  hide [--user USER_ID] PACKAGE_OR_COMPONENT
+  unhide [--user USER_ID] PACKAGE_OR_COMPONENT
+
+  suspend [--user USER_ID] PACKAGE [PACKAGE...]
+    Suspends the specified package(s) (as user).
+
+  unsuspend [--user USER_ID] PACKAGE [PACKAGE...]
+    Unsuspends the specified package(s) (as user).
+
+  trim-caches DESIRED_FREE_SPACE [internal|UUID]
+    Trim cache files to reach the given free space.
+
+  set-home-activity [--user USER_ID] TARGET-COMPONENT
+    Set the default home activity (aka launcher).
+    TARGET-COMPONENT can be a package name (com.package.my) or a full
+    component (com.package.my/component.name). However, only the package name
+    matters: the actual component used will be determined automatically from
+    the package.
+
+  set-installer PACKAGE INSTALLER
+    Set installer package name
+
+  get-instantapp-resolver
+    Return the name of the component that is the current instant app installer.
+
+  uninstall-system-updates [<PACKAGE>]
+    Removes updates to the given system application and falls back to its
+    /system version. Does nothing if the given package is not a system app.
+    If no package is specified, removes updates to all system applications.
+
+  get-moduleinfo [--all | --installed] [module-name]
+    Displays module info. If module-name is specified only that info is shown
+    By default, without any argument only installed modules are shown.
+      --all: show all module info
+      --installed: show only installed modules
